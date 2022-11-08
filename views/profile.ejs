@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Wedding Planner App</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/public/playlist.css">
+  <link rel="stylesheet" href="font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@300;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <h1 class="title">Wedding Planner App 🕊</h1><br>
+    <span> <%= user.local.email%> | </span>
+    <a href="/" class="logout">Logout</a>
+
+    <section class="navi">
+      <nav>
+        <a href="/playlists" class="btn btn-default btn-sm">Playlists</a>
+        <a href="/recording" class="btn btn-default btn-sm">Recordings</a>
+        <a href="/inspo" class="btn btn-default btn-sm">Inspo</a>
+        <a href="/" class="btn btn-default btn-sm">Logout</a><br><br>
+      </nav>
+    </section>
+  </header>
+
+  <section class="info">
+    <h1 class="h1">Hi again!</h1><br>
+    <p>Keep track of week to week changes 📅</p>
+    <p>Curate a playlist to get guests moving 🎵</p>
+    <p>Record important names for a smooth reception 🎙</p>
+    <p>Create a moodboard + manifest your vision 🖼</p>
+    <p>Ready to start planning? ☻</p>
+  </section>
+
+
+
+
+  <div class="container">
+
+
+
+    <div class="row">
+
+      <!-- LOCAL INFORMATION -->
+      <div class="col-sm-6">
+
+          
+
+<!-- 
+          <% if (user.local.email) { %>
+          <p>
+          <p><strong class="item">id</strong>: <%= user._id %><br></p> -->
+          <!-- <p><strong class="item">email</strong>: <%= user.local.email %><br></p> -->
+          <!-- <p><strong class="item">password</strong>: <%= user.local.password %></p> -->
+          <!-- </p> -->
+
+          <!-- <a href="/unlink/local" class="btn btn-default">Unlink</a> -->
+          <!-- <% } else { %> -->
+          <!-- <a href="/connect/local" class="btn btn-default">Connect Local</a> -->
+          <!-- <% } %> -->
+
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="well">
+          <h2>Wedding Details</h2><br>
+          <% if (user.local.email) { %>
+          <form action="/messagesMood" method="POST">
+          <label for="time">Wedding Date:</label>
+            <input id="date" type="date" name="date"><br>
+
+            <label for="time">Ceremony Start Time:</label>
+              <input type="time" id="timeOfDrink" name="time"><br>
+
+            <label for="time">Cocktail Hour Start Time:</label>
+              <input type="time" id="timeOfDrink" name="time"><br>
+
+            <label for="time">Reception Start Time:</label>
+              <input type="time" id="timeOfDrink" name="time"><br>
+
+            <label for="time">Reception End Time:</label>
+              <input type="time" id="timeOfDrink" name="time"><br>
+
+            <label for="message">Wedding Location:</label>
+              <input class="msgs" type="text" placeholder="e.g. Barn at Northbend Farm, Amherst" name="location"><br>
+            
+            <label for="message">Updates:</label>
+              <input class="msgs" type="text" placeholder="Enter juicy deets here" name="msg"><br><br>
+            
+              <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-sm-6" id="second">
+        <h3>Your Submissions</h3>
+
+        <ul class="messages">
+          <% for(var i=0; i<mood.length; i++) {%>
+          <li class="message">
+            <span>Wedding date:<br><%= mood[i].date %></span><br>
+            <span>Location:<br><%= mood[i].location %></span><br>
+            <span>Details:<br><%= mood[i].msg %></span>
+          </li>
+          <% } %>
+        </ul>
+
+      </div>
+      <% } %>
+    </div>
+
+
+  </div>
+
+  <script src="main.js"></script>
+
+</body>
+
+</html>

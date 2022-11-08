@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Wedding Planner App</title>
+
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="font-awesome.min.css">
+    <link rel="stylesheet" href="/public/playlist.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@300;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1 class="title">Wedding Planner App 🕊</h1><br>
+        <span> <%= user.local.email%> | </span>
+        <a href="/" class="logout">Logout</a>
+    
+        <section class="navi">
+          <nav>
+            <a href="/profile" class="btn btn-default btn-sm">Profile</a>
+            <a href="/playlists" class="btn btn-default btn-sm">Playlists</a>
+            <a href="/inspo" class="btn btn-default btn-sm">Inspo</a>
+            <a href="/" class="btn btn-default btn-sm">Logout</a><br><br>
+          </nav>
+        </section>
+      </header>
+
+      <section class="info">
+        <h1 class="h1">Record Audio</h1><br>
+        <p>Any not-so-easy names to pronounce in your bridal parties? Record them here!</p>
+      </section>
+
+    <div class="record audio-recording-container">
+        <h2 class="title">Record Names</h2><br>
+        <i class="start-recording-button fa fa-microphone" aria-hidden="true"></i>
+        <div class="recording-contorl-buttons-container hide">
+            <i class="cancel-recording-button fa fa-times-circle-o" aria-hidden="true"></i>
+            <div class="recording-elapsed-time">
+                <i class="red-recording-dot fa fa-circle" aria-hidden="true"></i>
+                <p class="elapsed-time"></p>
+            </div>
+            <i class="stop-recording-button fa fa-stop-circle-o" aria-hidden="true"></i>
+        </div>
+        <div class="text-indication-of-audio-playing-container">
+            <p class="text-indication-of-audio-playing hide">Audio is playing<span>.</span><span>.</span><span>.</span></p>
+        </div>
+    </div>
+    <div class="overlay hide">
+        <div class="browser-not-supporting-audio-recording-box">
+            <p>To record audio, use browsers like Chrome and Firefox that support audio recording.</p>
+            <button type="button" class="close-browser-not-supported-box">Ok.</button>
+        </div>
+    </div>
+
+    <audio controls class="audio-element hide">
+    </audio>
+
+    <script src="/public/audio-recording.js"></script>
+    <script src="/public/index.js"></script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-![Wedding Planner App](public/demo.png)
+<img src="https://i.postimg.cc/3xX3tXM9/photo.png">
 
 
 ## Installation

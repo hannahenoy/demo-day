@@ -1,3 +1,15 @@
+const multer = require('multer')
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/data/uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+var upload = multer({ storage: storage })
+
 const ObjectId = require("mongodb").ObjectId
 module.exports = function (app, passport, db) {
 
@@ -22,15 +34,15 @@ module.exports = function (app, passport, db) {
       if (err) return console.log(err)
       res.render('profile.ejs', {
         user: req.user,
-        mood: result
+        reception: result
       })
     })
   });
 
   // PLAYLIST SECTION =========================
 
-  app.get('/playlists', isLoggedIn, function(req, res) {
-    let songs =[
+  app.get('/playlists', isLoggedIn, function (req, res) {
+    let songs = [
       { songTitle: 'September', artist: 'Earth, Wind & Fire', src: 'https://www.youtube.com/embed/3cKtSlsYVEU' },
       { songTitle: 'How Deep Is Your Love', artist: 'PJ Morton', src: 'https://youtube.com/embed/IMxfoSh_XS4' },
       { songTitle: 'The Way You Look Tonight', artist: 'Frank Sinatra', src: 'https://www.youtube.com/embed/YFham2Xu6nA' },
@@ -66,17 +78,17 @@ module.exports = function (app, passport, db) {
       { songTitle: 'Low', artist: 'Flo Rida', src: 'https://www.youtube.com/embed/dq6Q_uaJF4k' },
 
     ];
-    db.collection('savedList').find().toArray((err1,savedsongs)=>{
+    db.collection('savedList').find().toArray((err1, savedsongs) => {
       db.collection('users').find().toArray((err2, result) => {
         if (err2) return console.log(err2)
         console.log(savedsongs, 'saved list')
         res.render('playlists.ejs', {
-          user : req.user,
+          user: req.user,
           songs: songs,
           savedsongs: savedsongs
         })
       })
-      })
+    })
   });
 
 
@@ -94,15 +106,73 @@ module.exports = function (app, passport, db) {
   });
 
   // INSPO SECTION =========================
-  app.get('/inspo', function (req, res) {
-    db.collection('photos').find().toArray((err, result) => {
+  // app.get('/inspo', function (req, res) {
+  //   db.collection('photos').find().toArray((err, result) => {
+  //     if (err) return console.log(err)
+  //     res.render('inspo.ejs', {
+  //       user: req.user,
+  //       messages: result,
+  //       photos: result
+  //     })
+  //   })
+  // });
+
+  app.get('/inspo', (req, res) => {
+    db.collection('messages').find().toArray((err, result) => {
       if (err) return console.log(err)
-      res.render('inspo.ejs', {
-        user: req.user,
-        messages: result
-      })
+      res.render('inspo.ejs', { user: req.user, messages: result })
     })
+  })
+
+  // app.post('/inspo', (req, res) => {
+  //   db.collection('messages').insertOne(
+  //     {
+  //       thumbUp:0,
+  //       thumbDown:0 }, (err, result) => {
+  //     if (err) return console.log(err)
+  //     console.log('saved to database')
+  //     res.redirect('/inspo')
+  //   })
+  // })
+
+  // source: https://www.npmjs.com/package/multer 
+  const express = require('express');
+
+  app.use(express.static(__dirname + '/public'));
+  app.use('/public/data/uploads', express.static('uploads'));
+
+  app.post('/inspo', upload.single('profile-file'), function (req, res, next) {
+    // req.file is the `profile-file` file
+    // req.body will hold the text fields, if there were any
+    console.log(JSON.stringify(req.file))
+    console.log('trying to upload image')
+    let img = {
+      src: req.file.path,
+      name: req.file.filename
+    }
+    console.log(img)
+    db.collection('messages').insertOne(img)
+      .then(result => {
+        res.redirect('/inspo')
+      })
+      .catch(error => console.error(error))
+
   });
+
+  //   var response = '<a href="/">Home</a><br>'
+  //   response += "Files uploaded successfully.<br>"
+  //   response += `<img src="${req.file.path}" /><br>`
+  //   return res.send(response)
+  // })
+
+  app.delete('/inspo', (req, res) => {
+    db.collection('messages').findOneAndDelete({ _id: ObjectId(req.body.id) }, (err, result) => {
+      if (err) return res.send(500, err)
+      console.log(err)
+      res.send('Message deleted!')
+    })
+  })
+
 
   // LOGOUT ==============================
   app.get('/logout', function (req, res) {
@@ -112,46 +182,48 @@ module.exports = function (app, passport, db) {
 
   // playlist routes ===============================================================
   app.post('/saveMovie', (req, res) => {
-    console.log(req.body,'request sent to post route')
+    console.log(req.body, 'request sent to post route')
     db.collection('savedList')
       .insertOne({
-          songTitle: req.body.songTitle,
-          artist: req.body.artist,
-          moviePoster: req.body.moviePoster }, 
-      (err, result) => {
-        if (err) return console.log(err)
-        console.log('saved to database', result)
-        res.send({})
-    })
+        songTitle: req.body.songTitle,
+        artist: req.body.artist,
+        moviePoster: req.body.moviePoster
+      },
+        (err, result) => {
+          if (err) return console.log(err)
+          console.log('saved to database', result)
+          res.send({})
+        })
   })
 
 
   app.put('/saveMovie', (req, res) => {
     db.collection('savedList')
-    .findOneAndUpdate({
-      songTitle: req.body.songTitle,
-      artist: req.body.artist,
-      moviePoster: req.body.moviePoster,
-      description: req.body.description }, {
-      $set: {
-        thumbUp:req.body.thumbUp + 1
-      }
-    }, {
-      sort: {_id: -1},
-      upsert: true
-    }, (err, result) => {
-      if (err) return res.send(err)
-      res.send(result)
-    })
+      .findOneAndUpdate({
+        songTitle: req.body.songTitle,
+        artist: req.body.artist,
+        moviePoster: req.body.moviePoster,
+        description: req.body.description
+      }, {
+        $set: {
+          thumbUp: req.body.thumbUp + 1
+        }
+      }, {
+        sort: { _id: -1 },
+        upsert: true
+      }, (err, result) => {
+        if (err) return res.send(err)
+        res.send(result)
+      })
   })
 
   app.delete('/deleteSave', (req, res) => {
     console.log(req.body, 'delete route hit')
-    db.collection('savedList').findOneAndDelete({_id: ObjectId(req.body.movieId)},
-      function(err, result){
-      if(err) return res.send(500, err)
-      res.send(result)
-    })
+    db.collection('savedList').findOneAndDelete({ _id: ObjectId(req.body.movieId) },
+      function (err, result) {
+        if (err) return res.send(500, err)
+        res.send(result)
+      })
 
   })
   app.post('/messages', (req, res) => {
@@ -179,36 +251,60 @@ module.exports = function (app, passport, db) {
 
   // message board routes ===============================================================
 
-  app.post('/updates', (req, res) => {
-    db.collection('messages').save({ date: req.body.date, time: req.body.time, location: req.body.location, msg: req.body.msg }, (err, result) => {
-      if (err) return console.log(err)
-      console.log('saved to database')
-      res.redirect('/profile')
-    })
+  app.post('/messagesMood', (req, res) => {
+    db.collection('messagesMood').save(
+      {
+        parentsIntro: req.body.parentsIntro,
+        bridalParty: req.body.bridalParty,
+        coupleIntro: req.body.coupleIntro,
+        firstDance: req.body.firstDance,
+        brideDance: req.body.brideDance,
+        groomDance: req.body.groomDance,
+        cakeCutting: req.body.cakeCutting,
+        lastDance: req.body.lastDance,
+        msg: req.body.msg
+      },
+      (err, result) => {
+        if (err) return console.log(err)
+        console.log('saved to database')
+        res.redirect('/profile')
+      })
   })
 
   app.post('/profile', (req, res) => {
-    db.collection('messages').insertOne({ date: req.body.date, time: req.body.time, location: req.body.location, msg: req.body.msg }, (err, result) => {
-      if (err) return console.log(err)
-      console.log('saved to database')
-      res.redirect('/')
-    })
+    db.collection('messagesMood').insertOne(
+      {
+        parentsIntro: req.body.parentsIntro,
+        bridalParty: req.body.bridalParty,
+        coupleIntro: req.body.coupleIntro,
+        firstDance: req.body.firstDance,
+        brideDance: req.body.brideDance,
+        groomDance: req.body.groomDance,
+        cakeCutting: req.body.cakeCutting,
+        lastDance: req.body.lastDance,
+        msg: req.body.msg
+      },
+      (err, result) => {
+        if (err) return console.log(err)
+        console.log('saved to database')
+        res.redirect('/')
+      })
   })
 
-  app.delete('/delete', (req, res) => {
-    db.collection('messages').findOneAndDelete({ _id: new mongoose.mongo.ObjectID(req.body.id) }, (err, result) => {
-      if (err) return res.send(500, err)
-      res.send('Message deleted!')
-    })
-  })
+  // app.delete('/delete', (req, res) => {
+  //   db.collection('messages').findOneAndDelete({ _id: new mongoose.mongo.ObjectID(req.body.id) }, (err, result) => {
+  //     if (err) return res.send(500, err)
+  //     res.send('Message deleted!')
+  //   })
+  // })
 
 
-  app.delete('/messages', (req, res) => {
-    db.collection('messages').findOneAndDelete({ name: req.body.name, msg: req.body.msg }, (err, result) => {
-      if (err) return res.send(500, err)
-      res.send('Message deleted!')
-    })
-  })
+  // app.delete('/messages', (req, res) => {
+  //   db.collection('messages').findOneAndDelete({ name: req.body.name, msg: req.body.msg }, (err, result) => {
+  //     if (err) return res.send(500, err)
+  //     res.send('Message deleted!')
+  //   })
+  // })
 
   // =============================================================================
   // AUTHENTICATE (FIRST LOGIN) don't touch this and sign up ==================================================

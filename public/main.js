@@ -1,23 +1,30 @@
-let trash = document.getElementsByClassName("fa fa-trash");
+let trash = document.getElementsByClassName("fa fa-times");
 let save = document.getElementsByClassName("save");
 const deleteSaved = document.querySelectorAll(".deleteSaved")
-const savedMusic = document.querySelector(".savedMusic").querySelectorAll(".artistName")
+// const savedMusic = document.querySelector(".savedMusic").querySelectorAll(".artistName")
 let love = document.getElementsByClassName("love");
+var thumbUp = document.getElementsByClassName("fa-heart");
+// let deletePhoto = document.getElementsByClassName("rubbish");
 
-// code for uploading photos from stackoverflow:
 
-// window.addEventListener('load', function() {
-//   document.querySelector('input[type="file"]').addEventListener('change', function() {
-//       if (this.files && this.files[0]) {
-//           var img = document.querySelector('img');
-//           img.onload = () => {
-//               URL.revokeObjectURL(img.src);  // no longer needed, free memory
-//           }
+  
+Array.from(trash).forEach(function(element) {
+  element.addEventListener('click', function(){
+    fetch('inspo', {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'id': element.id
+      })
+    }).then(function (response) {
+      window.location.reload()
+    })
+  });
+});
 
-//           img.src = URL.createObjectURL(this.files[0]); // set src to blob url
-//       }
-//   });
-// });
+
 
 Array.from(save).forEach(function(element) {
   element.addEventListener('click', function(){
@@ -97,26 +104,26 @@ fetch('saveMovie', {
 });
 });
 
+// PLAYLIST DELETE SONG 
+// deleteSaved.forEach((button) => {
+// button.addEventListener('click', function(){
+// let movieId = button.parentNode.childNodes[1].innerText
+// console.log(movieId)
+// console.log(button.parentNode.childNodes)
 
-deleteSaved.forEach((button) => {
-button.addEventListener('click', function(){
-let movieId = button.parentNode.childNodes[1].innerText
-console.log(movieId)
-console.log(button.parentNode.childNodes)
-
-fetch('deleteSave', {
-  method: 'delete',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    movieId: movieId,
-  })
-}).then(function (response) {
-  window.location.reload()
-})
-});
-})
+// fetch('deleteSave', {
+//   method: 'delete',
+//   headers: {
+//     'Content-Type': 'application/json'
+//   },
+//   body: JSON.stringify({
+//     movieId: movieId,
+//   })
+// }).then(function (response) {
+//   window.location.reload()
+// })
+// });
+// })
 
 
 // Array.from(love).forEach(function(element) {

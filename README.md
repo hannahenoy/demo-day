@@ -1,5 +1,4 @@
-<img src="https://i.postimg.cc/wMxZFGnp/demo.png">
-<img src="https://i.postimg.cc/gcDPRv1p/photo.png">
+<img src="https://i.imgur.com/SPqTXxj.png">
 
 
 ## Installation
